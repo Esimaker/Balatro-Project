@@ -230,6 +230,104 @@ public class HandEvaluatorTests
     }
 
     [Fact]
+    public void Evaluate_Straight_IsStraight_AndScoresAllFiveCards()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.Five, Suit.Hearts), (Rank.Six, Suit.Spades), (Rank.Seven, Suit.Clubs),
+            (Rank.Eight, Suit.Diamonds), (Rank.Nine, Suit.Hearts));
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.Straight, result.Combination.Type);
+        Assert.Equal(5, result.ScoringCards.Count);
+        Assert.Equal(70, result.Points);     // 35 base + 5 + 6 + 7 + 8 + 9
+        Assert.Equal(280, result.Total);     // 70 x 4
+    }
+
+    [Fact]
+    public void Evaluate_Flush_IsFlush_AndScoresAllFiveCards()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.Two, Suit.Hearts), (Rank.Five, Suit.Hearts), (Rank.Nine, Suit.Hearts),
+            (Rank.Jack, Suit.Hearts), (Rank.King, Suit.Hearts));
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.Flush, result.Combination.Type);
+        Assert.Equal(76, result.Points);     // 40 base + 2 + 5 + 9 + 10 + 10
+        Assert.Equal(304, result.Total);     // 76 x 4
+    }
+
+    [Fact]
+    public void Evaluate_StraightFlush_IsScoredAsFlush_BecauseFlushIsStronger()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.Five, Suit.Hearts), (Rank.Six, Suit.Hearts), (Rank.Seven, Suit.Hearts),
+            (Rank.Eight, Suit.Hearts), (Rank.Nine, Suit.Hearts));
+
+        Assert.True(new Straight().Matches(cards));
+        Assert.True(new Flush().Matches(cards));
+        Assert.Equal(HandType.Flush, _evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
+    public void Evaluate_FullHouse_IsFullHouse_NotThreeOfAKindOrTwoPair()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.King, Suit.Spades), (Rank.King, Suit.Hearts), (Rank.King, Suit.Clubs),
+            (Rank.Four, Suit.Spades), (Rank.Four, Suit.Hearts));
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.FullHouse, result.Combination.Type);
+        Assert.Equal(88, result.Points);     // 50 base + 10 + 10 + 10 + 4 + 4
+        Assert.Equal(352, result.Total);     // 88 x 4
+    }
+
+    [Fact]
+    public void Evaluate_FourOfAKindWithAnExtraCard_IsFourOfAKind_NotFullHouse()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.King, Suit.Spades), (Rank.King, Suit.Hearts), (Rank.King, Suit.Clubs),
+            (Rank.King, Suit.Diamonds), (Rank.Four, Suit.Hearts));
+
+        Assert.Equal(HandType.FourOfAKind, _evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
+    public void Evaluate_FourCardsInARow_IsOnlyHighCard()
+    {
+        List<ICard> cards = TestHands.Of(
+            (Rank.Five, Suit.Hearts), (Rank.Six, Suit.Spades), (Rank.Seven, Suit.Clubs),
+            (Rank.Eight, Suit.Diamonds));
+
+        Assert.Equal(HandType.HighCard, _evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
+    public void Evaluate_EveryCombination_IsReachable_AndTheStrongerOneWins()
+    {
+        // One hand per combination, from weakest to strongest. Each must be recognised as itself.
+        Dictionary<HandType, List<ICard>> hands = new()
+        {
+            [HandType.HighCard] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Five, Suit.Spades), (Rank.Nine, Suit.Clubs)),
+            [HandType.Pair] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Two, Suit.Spades), (Rank.Nine, Suit.Clubs)),
+            [HandType.TwoPair] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Two, Suit.Spades), (Rank.Nine, Suit.Clubs), (Rank.Nine, Suit.Hearts)),
+            [HandType.ThreeOfAKind] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Two, Suit.Spades), (Rank.Two, Suit.Clubs)),
+            [HandType.Straight] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Three, Suit.Spades), (Rank.Four, Suit.Clubs), (Rank.Five, Suit.Hearts), (Rank.Six, Suit.Diamonds)),
+            [HandType.Flush] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Four, Suit.Hearts), (Rank.Six, Suit.Hearts), (Rank.Eight, Suit.Hearts), (Rank.Ten, Suit.Hearts)),
+            [HandType.FullHouse] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Two, Suit.Spades), (Rank.Two, Suit.Clubs), (Rank.Nine, Suit.Hearts), (Rank.Nine, Suit.Spades)),
+            [HandType.FourOfAKind] = TestHands.Of((Rank.Two, Suit.Hearts), (Rank.Two, Suit.Spades), (Rank.Two, Suit.Clubs), (Rank.Two, Suit.Diamonds))
+        };
+
+        foreach (KeyValuePair<HandType, List<ICard>> hand in hands)
+        {
+            Assert.Equal(hand.Key, _evaluator.Evaluate(hand.Value).Combination.Type);
+        }
+        Assert.Equal(Enum.GetValues<HandType>().Length, hands.Count);   // a new HandType needs a hand here
+    }
+
+    [Fact]
     public void Constructor_WithAFakeCombination_UsesOnlyTheInterface()
     {
         // Shows the evaluator really depends on the interface only: a made-up combination works.

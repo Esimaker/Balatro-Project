@@ -291,11 +291,10 @@ public class CombinationTests
     [Fact]
     public void BaseScores_StayInOrder_FromHighCardUpToFourOfAKind()
     {
-        List<IHandCombination> weakestToStrongest = new()
-        {
-            new HighCard(), new Pair(), new TwoPair(), new ThreeOfAKind(), new FourOfAKind()
-        };
+        // Every combination the game has, weakest to strongest. A new combination must fit in this order.
+        List<IHandCombination> weakestToStrongest = HandCombinations.CreateAll().OrderBy(c => c.Type).ToList();
 
+        Assert.Equal(Enum.GetValues<HandType>().Length, weakestToStrongest.Count);   // none forgotten
         for (int i = 1; i < weakestToStrongest.Count; i++)
         {
             Assert.True(weakestToStrongest[i].BasePoints > weakestToStrongest[i - 1].BasePoints);
