@@ -1,14 +1,31 @@
+using BalatroConsole.Logic.Combinations;
 using BalatroConsole.Models;
 
 namespace BalatroConsole.Logic;
 
-// Phase 1, step 4: just adds up the points of the played cards.
-// Step 6 adds combinations (high card, pair, three of a kind) with points + multiplier,
-// step 7 filters the played cards down to only the ones that are part of the combination.
+// Finds which combination the player played and works out the score.
 public class HandEvaluator
 {
-    public int Evaluate(IReadOnlyList<ICard> playedCards)
+    // Strongest first: a three of a kind also contains a pair,
+    // so the first match in this list is always the best one.
+    private readonly List<IHandCombination> _combinations = new()
     {
-        return playedCards.Sum(card => card.Points);
+        new ThreeOfAKind(),
+        new Pair(),
+        new HighCard()
+    };
+
+    public ScoreResult Evaluate(IReadOnlyList<ICard> playedCards)
+    {
+        if (playedCards.Count == 0)
+            throw new ArgumentException("Play at least one card.", nameof(playedCards));
+
+        IHandCombination combination = _combinations.First(c => c.Matches(playedCards));
+
+        // Step 6: every played card adds its points.
+        // Step 7 will change this so only the cards in the combination count.
+        int points = combination.BasePoints + playedCards.Sum(card => card.Points);
+
+        return new ScoreResult(combination, points, combination.BaseMultiplier);
     }
 }

@@ -20,17 +20,17 @@ public class Round
     }
 
     // Removes the selected cards from the hand, scores them, then refills the hand.
-    // Returns the points earned by this play.
-    public int PlayHand()
+    // Returns the result of this play so the UI can show what happened.
+    public ScoreResult PlayHand()
     {
         if (Hand.SelectedCards.Count == 0)
             throw new InvalidOperationException("Select at least one card before playing.");
 
         List<ICard> played = Hand.RemoveSelected();
-        int points = _evaluator.Evaluate(played);
-        Score += points;
+        ScoreResult result = _evaluator.Evaluate(played);
+        Score += result.Total;
         FillHand();
-        return points;
+        return result;
     }
 
     // The round is in charge of never letting the hand go over 8 cards.
