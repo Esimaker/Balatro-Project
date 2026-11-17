@@ -73,4 +73,69 @@ public class HandEvaluatorTests
         Assert.Equal(2, result.Multiplier);
         Assert.Equal(60, result.Total);      // 30 x 2
     }
+
+    [Fact]
+    public void Evaluate_PairWithExtraCards_OnlyScoresThePairedCards()
+    {
+        // K K 3 7 9: the 3, 7 and 9 are played but are not part of the pair, so they must not score.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Diamonds),
+            new Card(Rank.Three, Suit.Hearts),
+            new Card(Rank.Seven, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds)
+        };
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(2, result.ScoringCards.Count);
+        Assert.All(result.ScoringCards, card => Assert.Equal(Rank.King, card.Rank));
+        Assert.Equal(30, result.Points);     // 10 base + 10 + 10, not + 3 + 7 + 9
+        Assert.Equal(60, result.Total);      // 30 x 2
+    }
+
+    [Fact]
+    public void Evaluate_HighCard_OnlyScoresTheHighestCard()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Two, Suit.Spades),
+            new Card(Rank.Ace, Suit.Hearts),
+            new Card(Rank.Six, Suit.Clubs)
+        };
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Single(result.ScoringCards);
+        Assert.Equal(Rank.Ace, result.ScoringCards[0].Rank);
+        Assert.Equal(16, result.Points);     // 5 base + 11 for the ace
+        Assert.Equal(16, result.Total);      // x1
+    }
+
+    [Fact]
+    public void Evaluate_ThreeOfAKindWithExtraCards_OnlyScoresTheThree()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Eight, Suit.Spades),
+            new Card(Rank.Eight, Suit.Hearts),
+            new Card(Rank.Eight, Suit.Clubs),
+            new Card(Rank.Ace, Suit.Diamonds),
+            new Card(Rank.Two, Suit.Diamonds)
+        };
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.ThreeOfAKind, result.Combination.Type);
+        Assert.Equal(3, result.ScoringCards.Count);
+        Assert.Equal(54, result.Points);     // 30 base + 8 + 8 + 8
+        Assert.Equal(162, result.Total);     // 54 x 3
+    }
+
+    [Fact]
+    public void Evaluate_NoCards_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => _evaluator.Evaluate(new List<ICard>()));
+    }
 }
