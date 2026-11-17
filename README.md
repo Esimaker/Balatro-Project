@@ -86,6 +86,18 @@ Het klassendiagram en de flowcharts staan in [docs](docs):
 elke combinatie los (ook de gevallen waarin die niet matcht) en de evaluator (sterkste combinatie
 wint, alleen scorende kaarten tellen).
 
+Extra controles op de hele evaluator:
+
+- **Alle 2.598.960 handen van 5 kaarten** worden beoordeeld en de aantallen per combinatie kloppen met de
+  bekende pokeraantallen (bijvoorbeeld 624 keer Four of a kind en 3.744 keer Full House).
+- **20.000 willekeurige handen** (vaste seed) moeten de scoreregels volgen: alleen gespeelde kaarten scoren,
+  de formule klopt en er matcht nooit een sterkere combinatie dan de gekozen.
+- Een **tabel met handen** en de exacte verwachte punten en totalen, plus de voorbeelden uit de user stories.
+- Een **heel deck uitspelen** via `Round`: elke kaart precies een keer, de scores tellen op.
+
+De grote controle duurt ongeveer 20 seconden en heeft het label `Slow`. Zonder die test:
+`dotnet test --filter "Category!=Slow"`.
+
 ## Voortgang
 
 | Fase | Inhoud | Status |
