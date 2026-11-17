@@ -34,18 +34,31 @@ public class CombinationTests
     }
 
     [Fact]
-    public void Pair_GetScoringCards_ReturnsExactlyTwo_WhenThreeShareARank()
+    public void Pair_DoesNotMatch_WhenThreeShareARank()
+    {
+        // 7-7-7 is three of a kind, not a pair.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Seven, Suit.Spades),
+            new Card(Rank.Seven, Suit.Hearts),
+            new Card(Rank.Seven, Suit.Clubs)
+        };
+
+        Assert.False(new Pair().Matches(cards));
+        Assert.Empty(new Pair().GetScoringCards(cards));
+    }
+
+    [Fact]
+    public void Pair_SevenSeven_Matches_AndScoresBothCards()
     {
         List<ICard> cards = new()
         {
-            new Card(Rank.Five, Suit.Spades),
-            new Card(Rank.Five, Suit.Hearts),
-            new Card(Rank.Five, Suit.Clubs)
+            new Card(Rank.Seven, Suit.Spades),
+            new Card(Rank.Seven, Suit.Hearts)
         };
 
-        IReadOnlyList<ICard> scoring = new Pair().GetScoringCards(cards);
-
-        Assert.Equal(2, scoring.Count);
+        Assert.True(new Pair().Matches(cards));
+        Assert.Equal(2, new Pair().GetScoringCards(cards).Count);
     }
 
     [Fact]
@@ -79,19 +92,33 @@ public class CombinationTests
     }
 
     [Fact]
-    public void ThreeOfAKind_GetScoringCards_ReturnsExactlyThree_WhenFourShareARank()
+    public void ThreeOfAKind_DoesNotMatch_WhenFourShareARank()
+    {
+        // 9-9-9-9 is four of a kind, not three of a kind.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Nine, Suit.Spades),
+            new Card(Rank.Nine, Suit.Hearts),
+            new Card(Rank.Nine, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds)
+        };
+
+        Assert.False(new ThreeOfAKind().Matches(cards));
+        Assert.Empty(new ThreeOfAKind().GetScoringCards(cards));
+    }
+
+    [Fact]
+    public void ThreeOfAKind_NineNineNine_Matches_AndScoresAllThree()
     {
         List<ICard> cards = new()
         {
-            new Card(Rank.Seven, Suit.Spades),
-            new Card(Rank.Seven, Suit.Hearts),
-            new Card(Rank.Seven, Suit.Clubs),
-            new Card(Rank.Seven, Suit.Diamonds)
+            new Card(Rank.Nine, Suit.Spades),
+            new Card(Rank.Nine, Suit.Hearts),
+            new Card(Rank.Nine, Suit.Clubs)
         };
 
-        IReadOnlyList<ICard> scoring = new ThreeOfAKind().GetScoringCards(cards);
-
-        Assert.Equal(3, scoring.Count);
+        Assert.True(new ThreeOfAKind().Matches(cards));
+        Assert.Equal(3, new ThreeOfAKind().GetScoringCards(cards).Count);
     }
 
     [Fact]
@@ -176,6 +203,37 @@ public class CombinationTests
             new Card(Rank.Six, Suit.Hearts),
             new Card(Rank.Six, Suit.Clubs),
             new Card(Rank.Six, Suit.Diamonds)
+        };
+
+        Assert.False(new TwoPair().Matches(cards));
+    }
+
+    [Fact]
+    public void TwoPair_DoesNotMatch_WhenThreeShareARankAndTwoShareAnother()
+    {
+        // K-K-K-4-4 is a full house, not two pair.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Hearts),
+            new Card(Rank.King, Suit.Clubs),
+            new Card(Rank.Four, Suit.Spades),
+            new Card(Rank.Four, Suit.Hearts)
+        };
+
+        Assert.False(new TwoPair().Matches(cards));
+    }
+
+    [Fact]
+    public void TwoPair_FourFourThreeTimes_DoesNotMatch()
+    {
+        // The criteria: 4-4-4-K is not two pair.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Four, Suit.Spades),
+            new Card(Rank.Four, Suit.Hearts),
+            new Card(Rank.Four, Suit.Clubs),
+            new Card(Rank.King, Suit.Spades)
         };
 
         Assert.False(new TwoPair().Matches(cards));

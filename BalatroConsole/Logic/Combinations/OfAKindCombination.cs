@@ -22,14 +22,14 @@ public abstract class OfAKindCombination : IHandCombination
         if (group == null)
             return new List<ICard>();
 
-        // Take exactly RequiredCount: a pair only scores 2 cards, even if there are more of that rank.
-        return group.Take(RequiredCount).ToList();
+        return group.ToList();
     }
 
+    // Exactly RequiredCount cards of one rank: 7-7-7 is NOT a pair, it is three of a kind.
     // If several ranks qualify (e.g. K K 3 3), the highest rank wins so the result is predictable.
     private IGrouping<Rank, ICard>? FindBestGroup(IReadOnlyList<ICard> cards) =>
         cards.GroupBy(card => card.Rank)
-             .Where(group => group.Count() >= RequiredCount)
+             .Where(group => group.Count() == RequiredCount)
              .OrderByDescending(group => group.Key)
              .FirstOrDefault();
 }

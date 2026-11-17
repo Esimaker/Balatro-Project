@@ -23,12 +23,13 @@ public class TwoPair : IHandCombination
         return pairs.SelectMany(pair => pair).ToList();
     }
 
-    // The two highest-ranking pairs, 2 cards each. Fewer than 2 pairs means no match.
+    // The two highest-ranking pairs. A pair is exactly 2 cards of a rank, so K K K 4 4 is not
+    // "two pair" (that is a full house) and 6 6 6 6 is not two pair either.
     private static List<List<ICard>> FindPairs(IReadOnlyList<ICard> cards) =>
         cards.GroupBy(card => card.Rank)
-             .Where(group => group.Count() >= 2)
+             .Where(group => group.Count() == 2)
              .OrderByDescending(group => group.Key)
              .Take(2)
-             .Select(group => group.Take(2).ToList())
+             .Select(group => group.ToList())
              .ToList();
 }
