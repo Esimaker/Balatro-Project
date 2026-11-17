@@ -22,10 +22,10 @@ public class HandEvaluator
 
         IHandCombination combination = _combinations.First(c => c.Matches(playedCards));
 
-        // Step 6: every played card adds its points.
-        // Step 7 will change this so only the cards in the combination count.
-        int points = combination.BasePoints + playedCards.Sum(card => card.Points);
+        // Only the cards in the combination score. The rest of the played cards are ignored.
+        IReadOnlyList<ICard> scoringCards = combination.GetScoringCards(playedCards);
+        int points = combination.BasePoints + scoringCards.Sum(card => card.Points);
 
-        return new ScoreResult(combination, points, combination.BaseMultiplier);
+        return new ScoreResult(combination, scoringCards, points, combination.BaseMultiplier);
     }
 }

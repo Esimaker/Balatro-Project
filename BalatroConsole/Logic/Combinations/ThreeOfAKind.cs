@@ -1,15 +1,10 @@
-using BalatroConsole.Models;
-
 namespace BalatroConsole.Logic.Combinations;
 
-public class ThreeOfAKind : IHandCombination
+public class ThreeOfAKind : OfAKindCombination
 {
-    public HandType Type => HandType.ThreeOfAKind;
-    public string Name => "Three of a Kind";
-    public int BasePoints => 30;
-    public int BaseMultiplier => 3;
-
-    // At least three cards share the same rank.
-    public bool Matches(IReadOnlyList<ICard> cards) =>
-        cards.GroupBy(card => card.Rank).Any(group => group.Count() >= 3);
+    public override HandType Type => HandType.ThreeOfAKind;
+    public override string Name => "Three of a Kind";
+    public override int BasePoints => 30;
+    public override int BaseMultiplier => 3;
+    protected override int RequiredCount => 3;
 }

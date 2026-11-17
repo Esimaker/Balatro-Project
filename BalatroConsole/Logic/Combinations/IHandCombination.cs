@@ -16,4 +16,8 @@ public interface IHandCombination
 
     // True if the played cards contain this combination.
     bool Matches(IReadOnlyList<ICard> cards);
+
+    // Only the cards that are part of the combination. The other played cards
+    // do not score. Returns an empty list if the combination is not present.
+    IReadOnlyList<ICard> GetScoringCards(IReadOnlyList<ICard> cards);
 }

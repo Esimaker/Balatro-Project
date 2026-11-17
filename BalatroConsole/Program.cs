@@ -20,7 +20,8 @@ round.Hand.Select(2);
 Console.WriteLine($"Playing: {string.Join(", ", round.Hand.SelectedCards)}");
 
 ScoreResult result = round.PlayHand();
-Console.WriteLine($"{result.Combination.Name}: {result.Points} points x {result.Multiplier} mult = {result.Total}");
+Console.WriteLine($"{result.Combination.Name} (scoring: {string.Join(", ", result.ScoringCards)})");
+Console.WriteLine($"{result.Points} points x {result.Multiplier} mult = {result.Total}");
 Console.WriteLine($"Total score: {round.Score}");
 Console.WriteLine($"Hand after refill ({round.Hand.Count}): {string.Join(", ", round.Hand.Cards)}");
 Console.WriteLine($"Cards left in deck: {deck.Cards.Count}");
