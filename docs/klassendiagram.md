@@ -27,7 +27,7 @@ classDiagram
         +Cards IReadOnlyList~ICard~
         +DrawnCards IReadOnlyList~ICard~
         +Shuffle()
-        +Deal(int count) List~ICard~
+        +Draw(int count) List~ICard~
     }
     class Hand {
         +MaxSelected int = 5

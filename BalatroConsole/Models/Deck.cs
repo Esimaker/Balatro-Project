@@ -57,19 +57,19 @@ public class Deck
         }
     }
 
-    // Deals 'count' cards from the top of the deck and takes them out of it.
+    // Draws 'count' cards from the top of the deck and takes them out of it.
     // Asking for more cards than are left is a mistake by the caller, so it throws a clear exception.
-    public List<ICard> Deal(int count)
+    public List<ICard> Draw(int count)
     {
         if (count < 0)
-            throw new ArgumentOutOfRangeException(nameof(count), "Can't deal a negative number of cards.");
+            throw new ArgumentOutOfRangeException(nameof(count), "Can't draw a negative number of cards.");
 
         if (count > _cards.Count)
-            throw new InvalidOperationException($"Can't deal {count} cards, only {_cards.Count} are left in the deck.");
+            throw new InvalidOperationException($"Can't draw {count} cards, only {_cards.Count} are left in the deck.");
 
-        List<ICard> dealt = _cards.GetRange(0, count);
+        List<ICard> drawn = _cards.GetRange(0, count);
         _cards.RemoveRange(0, count);
-        _drawnCards.AddRange(dealt);
-        return dealt;
+        _drawnCards.AddRange(drawn);
+        return drawn;
     }
 }

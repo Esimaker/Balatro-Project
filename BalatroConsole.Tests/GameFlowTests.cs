@@ -109,7 +109,7 @@ public class GameFlowTests
         {
             Deck deck = new(random);
             deck.Shuffle();
-            List<ICard> played = deck.Deal(random.Next(1, 6));
+            List<ICard> played = deck.Draw(random.Next(1, 6));
 
             Assert.True(new HighCard().Matches(played));
         }
@@ -142,14 +142,14 @@ public class GameFlowTests
     }
 
     [Fact]
-    public void Deck_AfterShuffleAndDeals_StillHas52DifferentCards()
+    public void Deck_AfterShuffleAndDraws_StillHas52DifferentCards()
     {
         Deck deck = new(new Random(8));
         deck.Shuffle();
-        List<ICard> dealt = deck.Deal(10);
+        List<ICard> drawn = deck.Draw(10);
         deck.Shuffle();
 
-        List<ICard> all = dealt.Concat(deck.Cards).ToList();
+        List<ICard> all = drawn.Concat(deck.Cards).ToList();
 
         Assert.Equal(52, all.Select(c => (c.Rank, c.Suit)).Distinct().Count());
         Assert.Equal(10, deck.DrawnCards.Count);
@@ -167,13 +167,13 @@ public class GameFlowTests
     }
 
     [Fact]
-    public void Deck_DealZero_ReturnsNothingAndChangesNothing()
+    public void Deck_DrawZero_ReturnsNothingAndChangesNothing()
     {
         Deck deck = new();
 
-        List<ICard> dealt = deck.Deal(0);
+        List<ICard> drawn = deck.Draw(0);
 
-        Assert.Empty(dealt);
+        Assert.Empty(drawn);
         Assert.Equal(52, deck.Cards.Count);
     }
 

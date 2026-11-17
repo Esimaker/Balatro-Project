@@ -93,7 +93,7 @@ public class EvaluatorVerificationTests
             Deck deck = new(random);
             deck.Shuffle();
             int size = random.Next(1, 6);
-            List<ICard> played = deck.Deal(size);
+            List<ICard> played = deck.Draw(size);
 
             ScoreResult result = _evaluator.Evaluate(played);
 
@@ -125,7 +125,7 @@ public class EvaluatorVerificationTests
         {
             Deck deck = new(random);
             deck.Shuffle();
-            List<ICard> played = deck.Deal(random.Next(1, 6));
+            List<ICard> played = deck.Draw(random.Next(1, 6));
 
             foreach (IHandCombination combination in _combinations)
             {
@@ -146,7 +146,7 @@ public class EvaluatorVerificationTests
         {
             Deck deck = new(random);
             deck.Shuffle();
-            List<ICard> played = deck.Deal(random.Next(6, 9));
+            List<ICard> played = deck.Draw(random.Next(6, 9));
 
             ScoreResult result = _evaluator.Evaluate(played);
 
@@ -176,7 +176,7 @@ public class EvaluatorVerificationTests
         {
             Deck deck = new(random);
             deck.Shuffle();
-            List<ICard> played = deck.Deal(random.Next(1, 6));
+            List<ICard> played = deck.Draw(random.Next(1, 6));
             List<ICard> reordered = played.OrderBy(_ => random.Next()).ToList();
 
             ScoreResult first = _evaluator.Evaluate(played);

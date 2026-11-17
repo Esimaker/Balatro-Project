@@ -131,7 +131,7 @@ public class BonusCardTests
         {
             Deck deck = new(random);
             deck.Shuffle();
-            List<ICard> plain = deck.Deal(random.Next(1, 6));
+            List<ICard> plain = deck.Draw(random.Next(1, 6));
             List<ICard> bonus = plain.Select(c => (ICard)new BonusCard(c.Rank, c.Suit)).ToList();
 
             ScoreResult plainResult = _evaluator.Evaluate(plain);
@@ -205,14 +205,14 @@ public class BonusCardTests
     }
 
     [Fact]
-    public void BonusCards_SurviveShuffleAndDeal()
+    public void BonusCards_SurviveShuffleAndDraw()
     {
         Deck deck = new(new Random(3), bonusCardCount: 10);
         deck.Shuffle();
 
-        List<ICard> dealt = deck.Deal(20);
+        List<ICard> drawn = deck.Draw(20);
 
-        int bonusInTotal = dealt.OfType<BonusCard>().Count() + deck.Cards.OfType<BonusCard>().Count();
+        int bonusInTotal = drawn.OfType<BonusCard>().Count() + deck.Cards.OfType<BonusCard>().Count();
         Assert.Equal(10, bonusInTotal);
     }
 

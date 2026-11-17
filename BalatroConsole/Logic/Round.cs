@@ -36,12 +36,12 @@ public class Round
 
     // The round is in charge of never letting the hand go over 8 cards.
     // Near the end the deck may have fewer cards than the hand is missing, so only ask for what is left
-    // (Deck.Deal throws if you ask for more).
+    // (Deck.Draw throws if you ask for more).
     private void FillHand()
     {
         int missing = HandSize - Hand.Count;
-        int toDeal = Math.Min(missing, _deck.Cards.Count);
-        if (toDeal > 0)
-            Hand.AddCards(_deck.Deal(toDeal));
+        int toDraw = Math.Min(missing, _deck.Cards.Count);
+        if (toDraw > 0)
+            Hand.AddCards(_deck.Draw(toDraw));
     }
 }
