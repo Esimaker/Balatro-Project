@@ -4,18 +4,21 @@ using BalatroConsole.Models;
 namespace BalatroConsole.Logic;
 
 // Finds which combination the player played and works out the score.
+// The combinations are passed in (dependency injection), so this class only knows the
+// IHandCombination interface and not a single concrete combination.
 public class HandEvaluator
 {
-    // Strongest first: a three of a kind also contains a pair,
-    // so the first match in this list is always the best one.
-    private readonly List<IHandCombination> _combinations = new()
+    private readonly List<IHandCombination> _combinations;
+
+    public HandEvaluator(IEnumerable<IHandCombination> combinations)
     {
-        new FourOfAKind(),
-        new ThreeOfAKind(),
-        new TwoPair(),
-        new Pair(),
-        new HighCard()
-    };
+        // Strongest first, decided here by HandType and not by the order the caller used:
+        // three of a kind also contains a pair, so the first match is always the best one.
+        _combinations = combinations.OrderByDescending(c => c.Type).ToList();
+
+        if (_combinations.Count == 0)
+            throw new ArgumentException("At least one combination is needed.", nameof(combinations));
+    }
 
     public ScoreResult Evaluate(IReadOnlyList<ICard> playedCards)
     {

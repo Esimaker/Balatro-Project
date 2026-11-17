@@ -6,7 +6,7 @@ namespace BalatroConsole.Tests;
 
 public class HandEvaluatorTests
 {
-    private readonly HandEvaluator _evaluator = new();
+    private readonly HandEvaluator _evaluator = new(HandCombinations.CreateAll());
 
     [Fact]
     public void Evaluate_KingKingThreeSevenNine_IsPair()
@@ -190,5 +190,72 @@ public class HandEvaluatorTests
     public void Evaluate_NoCards_Throws()
     {
         Assert.Throws<ArgumentException>(() => _evaluator.Evaluate(new List<ICard>()));
+    }
+
+    [Fact]
+    public void Evaluate_PairAndThreeOfAKindInOneHand_ScoresThreeOfAKind()
+    {
+        // Criteria for "strongest combination wins": a hand that matches BOTH Pair and Three of a kind.
+        // Only these three combinations are given, so the test keeps working once Full House exists.
+        HandEvaluator evaluator = new(new List<IHandCombination> { new HighCard(), new Pair(), new ThreeOfAKind() });
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Five, Suit.Spades),
+            new Card(Rank.Five, Suit.Hearts),
+            new Card(Rank.Five, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds),
+            new Card(Rank.Nine, Suit.Spades)
+        };
+
+        Assert.True(new Pair().Matches(cards));
+        Assert.True(new ThreeOfAKind().Matches(cards));
+        Assert.Equal(HandType.ThreeOfAKind, evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
+    public void Evaluate_ChoosesTheStrongestCombination_NoMatterInWhichOrderTheyWereGiven()
+    {
+        // The evaluator sorts the combinations itself, so a weakest-first list must give the same answer.
+        List<IHandCombination> weakestFirst = HandCombinations.CreateAll().OrderBy(c => c.Type).ToList();
+        HandEvaluator evaluator = new(weakestFirst);
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Eight, Suit.Spades),
+            new Card(Rank.Eight, Suit.Hearts),
+            new Card(Rank.Eight, Suit.Clubs),
+            new Card(Rank.Ace, Suit.Diamonds)
+        };
+
+        Assert.Equal(HandType.ThreeOfAKind, evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
+    public void Constructor_WithAFakeCombination_UsesOnlyTheInterface()
+    {
+        // Shows the evaluator really depends on the interface only: a made-up combination works.
+        HandEvaluator evaluator = new(new List<IHandCombination> { new AlwaysMatches() });
+        List<ICard> cards = new() { new Card(Rank.Two, Suit.Spades) };
+
+        ScoreResult result = evaluator.Evaluate(cards);
+
+        Assert.Equal("Always", result.Combination.Name);
+        Assert.Equal(100, result.Points);    // 100 base + no scoring cards
+        Assert.Equal(3, result.Multiplier);
+    }
+
+    [Fact]
+    public void Constructor_WithNoCombinations_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => new HandEvaluator(new List<IHandCombination>()));
+    }
+
+    private class AlwaysMatches : IHandCombination
+    {
+        public HandType Type => HandType.HighCard;
+        public string Name => "Always";
+        public int BasePoints => 100;
+        public int BaseMultiplier => 3;
+        public bool Matches(IReadOnlyList<ICard> cards) => true;
+        public IReadOnlyList<ICard> GetScoringCards(IReadOnlyList<ICard> cards) => new List<ICard>();
     }
 }

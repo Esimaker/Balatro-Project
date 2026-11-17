@@ -1,3 +1,4 @@
+using BalatroConsole.Logic.Combinations;
 using BalatroConsole.Models;
 
 namespace BalatroConsole.Logic;
@@ -15,7 +16,7 @@ public class Round
     public Round(Deck deck, HandEvaluator? evaluator = null)
     {
         _deck = deck;
-        _evaluator = evaluator ?? new HandEvaluator();
+        _evaluator = evaluator ?? new HandEvaluator(HandCombinations.CreateAll());
         FillHand();
     }
 
