@@ -6,7 +6,7 @@ using BalatroConsole.Models;
 // This gets replaced by the real (MVVM) console UI later.
 Console.OutputEncoding = Encoding.UTF8;
 
-Deck deck = new();
+Deck deck = new(bonusCardCount: 5);   // 5 cards are bonus cards, marked with a + (e.g. 5♣+)
 Console.WriteLine($"New deck: {deck.Cards.Count} cards");
 
 deck.Shuffle();
