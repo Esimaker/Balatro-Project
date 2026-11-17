@@ -5,5 +5,7 @@ public enum HandType
 {
     HighCard,
     Pair,
-    ThreeOfAKind
+    TwoPair,
+    ThreeOfAKind,
+    FourOfAKind
 }

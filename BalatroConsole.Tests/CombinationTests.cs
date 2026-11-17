@@ -132,4 +132,117 @@ public class CombinationTests
         Assert.True(three.BasePoints > pair.BasePoints && pair.BasePoints > highCard.BasePoints);
         Assert.True(three.BaseMultiplier > pair.BaseMultiplier && pair.BaseMultiplier > highCard.BaseMultiplier);
     }
+
+    [Fact]
+    public void TwoPair_Matches_AndScoresTheFourPairedCards()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Diamonds),
+            new Card(Rank.Three, Suit.Hearts),
+            new Card(Rank.Three, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds)
+        };
+        TwoPair twoPair = new();
+
+        Assert.True(twoPair.Matches(cards));
+        IReadOnlyList<ICard> scoring = twoPair.GetScoringCards(cards);
+        Assert.Equal(4, scoring.Count);
+        Assert.DoesNotContain(scoring, card => card.Rank == Rank.Nine);
+    }
+
+    [Fact]
+    public void TwoPair_DoesNotMatch_WithOnlyOnePair()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Diamonds),
+            new Card(Rank.Three, Suit.Hearts)
+        };
+
+        Assert.False(new TwoPair().Matches(cards));
+        Assert.Empty(new TwoPair().GetScoringCards(cards));
+    }
+
+    [Fact]
+    public void TwoPair_DoesNotMatch_WhenFourCardsShareOneRank()
+    {
+        // Four of the same rank is ONE rank, not two different pairs.
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Six, Suit.Spades),
+            new Card(Rank.Six, Suit.Hearts),
+            new Card(Rank.Six, Suit.Clubs),
+            new Card(Rank.Six, Suit.Diamonds)
+        };
+
+        Assert.False(new TwoPair().Matches(cards));
+    }
+
+    [Fact]
+    public void TwoPair_WithThreePairs_ScoresOnlyTheTwoHighest()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Two, Suit.Spades),
+            new Card(Rank.Two, Suit.Hearts),
+            new Card(Rank.Five, Suit.Clubs),
+            new Card(Rank.Five, Suit.Diamonds),
+            new Card(Rank.Queen, Suit.Spades),
+            new Card(Rank.Queen, Suit.Hearts)
+        };
+
+        IReadOnlyList<ICard> scoring = new TwoPair().GetScoringCards(cards);
+
+        Assert.Equal(4, scoring.Count);
+        Assert.All(scoring, card => Assert.NotEqual(Rank.Two, card.Rank));
+    }
+
+    [Fact]
+    public void FourOfAKind_Matches_AndScoresExactlyFourCards()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Nine, Suit.Spades),
+            new Card(Rank.Nine, Suit.Hearts),
+            new Card(Rank.Nine, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds),
+            new Card(Rank.Ace, Suit.Spades)
+        };
+        FourOfAKind four = new();
+
+        Assert.True(four.Matches(cards));
+        Assert.Equal(4, four.GetScoringCards(cards).Count);
+    }
+
+    [Fact]
+    public void FourOfAKind_DoesNotMatch_WithOnlyThreeOfTheSameRank()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Nine, Suit.Spades),
+            new Card(Rank.Nine, Suit.Hearts),
+            new Card(Rank.Nine, Suit.Clubs)
+        };
+
+        Assert.False(new FourOfAKind().Matches(cards));
+    }
+
+    [Fact]
+    public void BaseScores_StayInOrder_FromHighCardUpToFourOfAKind()
+    {
+        List<IHandCombination> weakestToStrongest = new()
+        {
+            new HighCard(), new Pair(), new TwoPair(), new ThreeOfAKind(), new FourOfAKind()
+        };
+
+        for (int i = 1; i < weakestToStrongest.Count; i++)
+        {
+            Assert.True(weakestToStrongest[i].BasePoints > weakestToStrongest[i - 1].BasePoints);
+            Assert.True(weakestToStrongest[i].BaseMultiplier >= weakestToStrongest[i - 1].BaseMultiplier);
+            Assert.True(weakestToStrongest[i].Type > weakestToStrongest[i - 1].Type);
+        }
+    }
 }

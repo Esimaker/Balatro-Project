@@ -10,7 +10,9 @@ public class HandEvaluator
     // so the first match in this list is always the best one.
     private readonly List<IHandCombination> _combinations = new()
     {
+        new FourOfAKind(),
         new ThreeOfAKind(),
+        new TwoPair(),
         new Pair(),
         new HighCard()
     };

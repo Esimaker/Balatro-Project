@@ -134,6 +134,59 @@ public class HandEvaluatorTests
     }
 
     [Fact]
+    public void Evaluate_TwoPairs_IsTwoPair_AndIgnoresTheKicker()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Diamonds),
+            new Card(Rank.Three, Suit.Hearts),
+            new Card(Rank.Three, Suit.Clubs),
+            new Card(Rank.Nine, Suit.Diamonds)
+        };
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.TwoPair, result.Combination.Type);
+        Assert.Equal(4, result.ScoringCards.Count);
+        Assert.Equal(46, result.Points);     // 20 base + 10 + 10 + 3 + 3, the 9 does not score
+        Assert.Equal(92, result.Total);      // 46 x 2
+    }
+
+    [Fact]
+    public void Evaluate_FourSameRank_IsFourOfAKindNotThreeOfAKind()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.Four, Suit.Spades),
+            new Card(Rank.Four, Suit.Hearts),
+            new Card(Rank.Four, Suit.Clubs),
+            new Card(Rank.Four, Suit.Diamonds),
+            new Card(Rank.Jack, Suit.Spades)
+        };
+
+        ScoreResult result = _evaluator.Evaluate(cards);
+
+        Assert.Equal(HandType.FourOfAKind, result.Combination.Type);
+        Assert.Equal(76, result.Points);     // 60 base + 4 x 4
+        Assert.Equal(532, result.Total);     // 76 x 7
+    }
+
+    [Fact]
+    public void Evaluate_OnePair_IsStillPair_NotTwoPair()
+    {
+        List<ICard> cards = new()
+        {
+            new Card(Rank.King, Suit.Spades),
+            new Card(Rank.King, Suit.Diamonds),
+            new Card(Rank.Three, Suit.Hearts),
+            new Card(Rank.Seven, Suit.Clubs)
+        };
+
+        Assert.Equal(HandType.Pair, _evaluator.Evaluate(cards).Combination.Type);
+    }
+
+    [Fact]
     public void Evaluate_NoCards_Throws()
     {
         Assert.Throws<ArgumentException>(() => _evaluator.Evaluate(new List<ICard>()));
