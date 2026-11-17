@@ -4,7 +4,7 @@ Een Balatro-achtige kaartgame in C#, gemaakt als individueel schoolproject (Tech
 Rotterdam, leerjaar 2). Je krijgt een hand van 8 kaarten, selecteert er maximaal 5, speelt ze en
 krijgt punten volgens de pokercombinatie die je gespeeld hebt.
 
-> **Status:** fase 1 (basis) is klaar en fase 2A (combinaties) is bezig. De console-UI is nog een
+> **Status:** fase 1 (basis) en fase 2A (combinaties) zijn klaar. De console-UI is nog een
 > korte test in `Program.cs`. De echte (MVVM) console-UI komt in fase 2C. Zie [Voortgang](#voortgang).
 
 ## Draaien
@@ -40,7 +40,13 @@ In Visual Studio: open `BalatroConsole.slnx` en gebruik **Test > Run All Tests**
 | Pair | Precies 2 kaarten met dezelfde rank | 10 | x2 |
 | Two pair | Twee verschillende ranks, elk precies 2 kaarten | 20 | x2 |
 | Three of a kind | Precies 3 kaarten met dezelfde rank | 30 | x3 |
+| Straight | 5 kaarten met opeenvolgende ranks (Aas telt hoog en laag, geen rondje Q K A 2 3) | 35 | x4 |
+| Flush | 5 kaarten van dezelfde suit | 40 | x4 |
+| Full House | Precies 3 kaarten van een rank plus precies 2 van een andere rank | 50 | x4 |
 | Four of a kind | 4 kaarten met dezelfde rank | 60 | x7 |
+
+Een straight flush (5 opeenvolgende kaarten van een suit) telt als Flush, omdat Flush sterker is dan Straight.
+De basispunten stijgen steeds, dus een sterkere combinatie levert altijd meer basispunten op.
 
 Voorbeeld: `K K 3 7 9` is een Pair. Alleen de twee koningen scoren: `(10 + 10 + 10) x 2 = 60`.
 De 3, 7 en 9 doen niet mee.
@@ -52,7 +58,7 @@ BalatroConsole/
   Models/              Card, Deck, Hand, ICard, Suit, Rank
   Logic/               Round, HandEvaluator, ScoreResult
   Logic/Combinations/  IHandCombination, OfAKindCombination, HighCard, Pair, TwoPair,
-                       ThreeOfAKind, FourOfAKind, HandType, HandCombinations
+                       ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, HandType, HandCombinations
   Program.cs           (tijdelijke) test van de basisklassen
 BalatroConsole.Tests/  xUnit tests
 docs/                  klassendiagram en flowcharts
@@ -85,7 +91,7 @@ wint, alleen scorende kaarten tellen).
 | Fase | Inhoud | Status |
 |---|---|---|
 | 1 | Basis: Card, Deck, Hand, Round, HighCard / Pair / Three of a kind, scoring, tests | klaar |
-| 2A | Meer combinaties: Two pair, Four of a kind (klaar), Full House, Straight, Flush | bezig |
+| 2A | Meer combinaties: Two pair, Four of a kind, Full House, Straight, Flush | klaar |
 | 2B | Kaarttypes: BonusCard, GlassCard via een interface | gepland |
 | 2C | Console-UI volgens MVVM | gepland |
 | 3 en later | Opruimen, should-haves en could-haves (o.a. stickers via het Decorator-patroon, Windows Forms) | gepland |
