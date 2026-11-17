@@ -20,6 +20,7 @@ Score = `(basispunten + kaartpunten) x multiplier`. Alleen de kaarten die in de 
 tellen mee, de andere gespeelde kaarten niet. Er wordt maar een combinatie gescoord: de sterkste.
 
 Kaartpunten: 2 tot 10 = het getal, J / Q / K = 10, Aas = 11.
+Een **BonusCard** (in de console gemarkeerd met een `+`, bijv. `5♣+`) is 10 punten meer waard als hij scoort.
 
 | Combinatie | Basispunten | Multiplier |
 |---|---|---|
@@ -36,9 +37,11 @@ Voorbeeld: `K K 3 7 9` is een Pair. Alleen de twee koningen scoren: `(10 + 10 + 
 
 ## Gekozen uitbreidingen
 
-Gedaan: Two pair, Four of a kind, Full House, Straight, Flush.
+Should-haves gedaan: Two pair, Four of a kind, Straight, Flush (en ook Full House).
 
-Gepland (staan op het Trello-bord): BonusCard, GlassCard, Wildcard, MultCard, ChanceCard,
-stickers via het Decorator-patroon en een Windows Forms-interface.
+Gepland (staan op het Trello-bord): Wildcard, MultCard, ChanceCard, Steelcard, stickers via het
+Decorator-patroon en een Windows Forms-interface.
+
+Must-haves die nog moeten komen: GlassCard en de MVVM-console-UI.
 
 Het klassendiagram en de flowcharts staan in [docs](docs).

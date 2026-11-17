@@ -20,6 +20,9 @@ classDiagram
         +int Points
         +ToString() string
     }
+    class BonusCard {
+        +Points int
+    }
     class Deck {
         +Cards IReadOnlyList~ICard~
         +DrawnCards IReadOnlyList~ICard~
@@ -107,6 +110,7 @@ classDiagram
 
     %% ---------- Relations ----------
     ICard <|.. Card : implementeert
+    Card <|-- BonusCard : override Points
     Card --> Rank
     Card --> Suit
     Deck o-- ICard : bevat
