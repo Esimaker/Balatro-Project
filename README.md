@@ -21,6 +21,8 @@ tellen mee, de andere gespeelde kaarten niet. Er wordt maar een combinatie gesco
 
 Kaartpunten: 2 tot 10 = het getal, J / Q / K = 10, Aas = 11.
 Een **BonusCard** (in de console gemarkeerd met een `+`, bijv. `5♣+`) is 10 punten meer waard als hij scoort.
+Een **GlassCard** (gemarkeerd met een `*`, bijv. `5♣*`) verdubbelt de multiplier als hij scoort (x2, twee
+glass cards geven x4). Het breken van een glass card is een could-have en zit er nog niet in.
 
 | Combinatie | Basispunten | Multiplier |
 |---|---|---|
@@ -42,6 +44,6 @@ Should-haves gedaan: Two pair, Four of a kind, Straight, Flush (en ook Full Hous
 Gepland (staan op het Trello-bord): Wildcard, MultCard, ChanceCard, Steelcard, stickers via het
 Decorator-patroon en een Windows Forms-interface.
 
-Must-haves die nog moeten komen: GlassCard en de MVVM-console-UI.
+Must-haves gedaan: BonusCard, GlassCard (via `ICard` en de klasse `Score`). Nog te doen: de MVVM-console-UI.
 
 Het klassendiagram en de flowcharts staan in [docs](docs).
