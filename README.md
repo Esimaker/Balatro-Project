@@ -46,4 +46,4 @@ Decorator-patroon en een Windows Forms-interface.
 
 Must-haves gedaan: BonusCard, GlassCard (via `ICard` en de klasse `Score`). Nog te doen: de MVVM-console-UI.
 
-Het klassendiagram en de flowcharts staan in [docs](docs).
+De flowcharts staan in [docs](docs).
