@@ -3,12 +3,13 @@ using BalatroConsole.Models;
 
 namespace BalatroConsole.Logic;
 
-// Finds which combination the player played and works out the score.
+// Finds which combination the player played. The score itself is worked out by the ScoreCalculator.
 // The combinations are passed in (dependency injection), so this class only knows the
 // IHandCombination interface and not a single concrete combination.
 public class HandEvaluator
 {
     private readonly List<IHandCombination> _combinations;
+    private readonly ScoreCalculator _calculator = new();
 
     public HandEvaluator(IEnumerable<IHandCombination> combinations)
     {
@@ -29,8 +30,8 @@ public class HandEvaluator
 
         // Only the cards in the combination score. The rest of the played cards are ignored.
         IReadOnlyList<ICard> scoringCards = combination.GetScoringCards(playedCards);
-        int points = combination.BasePoints + scoringCards.Sum(card => card.Points);
+        Score score = _calculator.Calculate(combination, scoringCards);
 
-        return new ScoreResult(combination, scoringCards, points, combination.BaseMultiplier);
+        return new ScoreResult(combination, scoringCards, score.Points, score.Multiplier);
     }
 }

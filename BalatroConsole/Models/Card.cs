@@ -11,14 +11,24 @@ public class Card : ICard
         Suit = suit;
     }
 
-    public virtual int Points => Rank switch
+    public virtual int Points => PointsOf(Rank);
+
+    // A normal card adds its points and leaves the multiplier alone.
+    // BonusCard does not need to override this: it overrides Points, and this method uses it.
+    public virtual Score Apply(Score current) => current.AddPoints(Points);
+
+    public override string ToString() => SymbolOf(Rank, Suit);
+
+    // Shared with other ICard classes that are not children of Card (like GlassCard),
+    // so the point values and symbols are written down in one place only.
+    internal static int PointsOf(Rank rank) => rank switch
     {
         Rank.Jack or Rank.Queen or Rank.King => 10,
         Rank.Ace => 11,
-        _ => (int)Rank
+        _ => (int)rank
     };
 
-    public override string ToString() => $"{RankSymbol(Rank)}{SuitSymbol(Suit)}";
+    internal static string SymbolOf(Rank rank, Suit suit) => $"{RankSymbol(rank)}{SuitSymbol(suit)}";
 
     private static string RankSymbol(Rank rank) => rank switch
     {
